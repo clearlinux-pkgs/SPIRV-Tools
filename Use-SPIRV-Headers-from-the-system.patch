@@ -1,0 +1,41 @@
+From d68b1f41a61dd24e0291d771112c5ac227ca5b5b Mon Sep 17 00:00:00 2001
+From: Caio Marcelo de Oliveira Filho <caio.oliveira@intel.com>
+Date: Sun, 24 Feb 2019 19:43:34 -0800
+Subject: [PATCH] Use SPIRV-Headers from the system
+
+---
+ external/CMakeLists.txt | 18 ------------------
+ 1 file changed, 18 deletions(-)
+
+diff --git a/external/CMakeLists.txt b/external/CMakeLists.txt
+index d1251c24..694b726c 100644
+--- a/external/CMakeLists.txt
++++ b/external/CMakeLists.txt
+@@ -13,24 +13,6 @@
+ # See the License for the specific language governing permissions and
+ # limitations under the License.
+ 
+-if (DEFINED SPIRV-Headers_SOURCE_DIR)
+-  # This allows flexible position of the SPIRV-Headers repo.
+-  set(SPIRV_HEADER_DIR ${SPIRV-Headers_SOURCE_DIR})
+-else()
+-  if (IS_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/SPIRV-Headers)
+-    set(SPIRV_HEADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/SPIRV-Headers)
+-  else()
+-    set(SPIRV_HEADER_DIR ${CMAKE_CURRENT_SOURCE_DIR}/spirv-headers)
+-  endif()
+-endif()
+-
+-if (IS_DIRECTORY ${SPIRV_HEADER_DIR})
+-  set(SPIRV_HEADER_INCLUDE_DIR ${SPIRV_HEADER_DIR}/include PARENT_SCOPE)
+-else()
+-  message(FATAL_ERROR
+-    "SPIRV-Headers was not found - please checkout a copy under external/.")
+-endif()
+-
+ if (NOT ${SPIRV_SKIP_TESTS})
+   # Find gmock if we can. If it's not already configured, then try finding
+   # it in external/googletest.
+-- 
+2.20.1
+
