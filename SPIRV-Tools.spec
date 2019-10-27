@@ -4,7 +4,7 @@
 #
 Name     : SPIRV-Tools
 Version  : 2019.4
-Release  : 3
+Release  : 4
 URL      : https://github.com/KhronosGroup/SPIRV-Tools/archive/v2019.4/SPIRV-Tools-2019.4.tar.gz
 Source0  : https://github.com/KhronosGroup/SPIRV-Tools/archive/v2019.4/SPIRV-Tools-2019.4.tar.gz
 Summary  : Tools for SPIR-V
@@ -14,6 +14,12 @@ Requires: SPIRV-Tools-bin = %{version}-%{release}
 Requires: SPIRV-Tools-license = %{version}-%{release}
 BuildRequires : SPIRV-Headers-dev
 BuildRequires : buildreq-cmake
+BuildRequires : gcc-dev32
+BuildRequires : gcc-libgcc32
+BuildRequires : gcc-libstdc++32
+BuildRequires : glibc-dev32
+BuildRequires : glibc-libc32
+BuildRequires : util-linux
 Patch1: Use-SPIRV-Headers-from-the-system.patch
 
 %description
@@ -42,6 +48,16 @@ Requires: SPIRV-Tools = %{version}-%{release}
 dev components for the SPIRV-Tools package.
 
 
+%package dev32
+Summary: dev32 components for the SPIRV-Tools package.
+Group: Default
+Requires: SPIRV-Tools-bin = %{version}-%{release}
+Requires: SPIRV-Tools-dev = %{version}-%{release}
+
+%description dev32
+dev32 components for the SPIRV-Tools package.
+
+
 %package license
 Summary: license components for the SPIRV-Tools package.
 Group: Default
@@ -59,7 +75,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1567782644
+export SOURCE_DATE_EPOCH=1572206643
 mkdir -p clr-build
 pushd clr-build
 export GCC_IGNORE_WERROR=1
@@ -68,14 +84,39 @@ export FCFLAGS="$CFLAGS -fno-lto "
 export FFLAGS="$CFLAGS -fno-lto "
 export CXXFLAGS="$CXXFLAGS -fno-lto "
 %cmake .. -DSPIRV_HEADER_INCLUDE_DIR=/usr/include
-make  %{?_smp_mflags} VERBOSE=1
+make  %{?_smp_mflags}  VERBOSE=1
+popd
+mkdir -p clr-build32
+pushd clr-build32
+export GCC_IGNORE_WERROR=1
+export CFLAGS="$CFLAGS -fno-lto "
+export FCFLAGS="$CFLAGS -fno-lto "
+export FFLAGS="$CFLAGS -fno-lto "
+export CXXFLAGS="$CXXFLAGS -fno-lto "
+export PKG_CONFIG_PATH="/usr/lib32/pkgconfig"
+export ASFLAGS="${ASFLAGS}${ASFLAGS:+ }--32"
+export CFLAGS="${CFLAGS}${CFLAGS:+ }-m32 -mstackrealign"
+export CXXFLAGS="${CXXFLAGS}${CXXFLAGS:+ }-m32 -mstackrealign"
+export LDFLAGS="${LDFLAGS}${LDFLAGS:+ }-m32 -mstackrealign"
+%cmake -DLIB_INSTALL_DIR:PATH=/usr/lib32 -DCMAKE_INSTALL_LIBDIR=/usr/lib32 -DLIB_SUFFIX=32 .. -DSPIRV_HEADER_INCLUDE_DIR=/usr/include
+make  %{?_smp_mflags}  VERBOSE=1
+unset PKG_CONFIG_PATH
 popd
 
 %install
-export SOURCE_DATE_EPOCH=1567782644
+export SOURCE_DATE_EPOCH=1572206643
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/SPIRV-Tools
-cp LICENSE %{buildroot}/usr/share/package-licenses/SPIRV-Tools/LICENSE
+cp %{_builddir}/SPIRV-Tools-2019.4/LICENSE %{buildroot}/usr/share/package-licenses/SPIRV-Tools/2b8b815229aa8a61e483fb4ba0588b8b6c491890
+pushd clr-build32
+%make_install32
+if [ -d  %{buildroot}/usr/lib32/pkgconfig ]
+then
+pushd %{buildroot}/usr/lib32/pkgconfig
+for i in *.pc ; do ln -s $i 32$i ; done
+popd
+fi
+popd
 pushd clr-build
 %make_install
 popd
@@ -109,6 +150,18 @@ popd
 /usr/lib64/pkgconfig/SPIRV-Tools-shared.pc
 /usr/lib64/pkgconfig/SPIRV-Tools.pc
 
+%files dev32
+%defattr(-,root,root,-)
+/usr/lib32/libSPIRV-Tools-link.so
+/usr/lib32/libSPIRV-Tools-opt.so
+/usr/lib32/libSPIRV-Tools-reduce.so
+/usr/lib32/libSPIRV-Tools-shared.so
+/usr/lib32/libSPIRV-Tools.so
+/usr/lib32/pkgconfig/32SPIRV-Tools-shared.pc
+/usr/lib32/pkgconfig/32SPIRV-Tools.pc
+/usr/lib32/pkgconfig/SPIRV-Tools-shared.pc
+/usr/lib32/pkgconfig/SPIRV-Tools.pc
+
 %files license
 %defattr(0644,root,root,0755)
-/usr/share/package-licenses/SPIRV-Tools/LICENSE
+/usr/share/package-licenses/SPIRV-Tools/2b8b815229aa8a61e483fb4ba0588b8b6c491890
