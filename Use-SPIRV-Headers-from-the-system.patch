@@ -1,19 +1,20 @@
-From d68b1f41a61dd24e0291d771112c5ac227ca5b5b Mon Sep 17 00:00:00 2001
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Caio Marcelo de Oliveira Filho <caio.oliveira@intel.com>
 Date: Sun, 24 Feb 2019 19:43:34 -0800
 Subject: [PATCH] Use SPIRV-Headers from the system
 
+Signed-off-by: Patrick McCarty <patrick.mccarty@intel.com>
 ---
- external/CMakeLists.txt | 18 ------------------
- 1 file changed, 18 deletions(-)
+ external/CMakeLists.txt | 28 ----------------------------
+ 1 file changed, 28 deletions(-)
 
 diff --git a/external/CMakeLists.txt b/external/CMakeLists.txt
-index d1251c24..694b726c 100644
+index 179a401..aa33f20 100644
 --- a/external/CMakeLists.txt
 +++ b/external/CMakeLists.txt
-@@ -13,24 +13,6 @@
- # See the License for the specific language governing permissions and
- # limitations under the License.
+@@ -26,34 +26,6 @@ function(pop_variable var)
+     set(${var} ${val} PARENT_SCOPE)
+ endfunction()
  
 -if (DEFINED SPIRV-Headers_SOURCE_DIR)
 -  # This allows flexible position of the SPIRV-Headers repo.
@@ -27,7 +28,17 @@ index d1251c24..694b726c 100644
 -endif()
 -
 -if (IS_DIRECTORY ${SPIRV_HEADER_DIR})
+-  # TODO(dneto): We should not be modifying the parent scope.
 -  set(SPIRV_HEADER_INCLUDE_DIR ${SPIRV_HEADER_DIR}/include PARENT_SCOPE)
+-
+-  # Add SPIRV-Headers as a sub-project if it isn't already defined.
+-  # Do this so enclosing projects can use SPIRV-Headers_SOURCE_DIR to find
+-  # headers to include.
+-  if (NOT DEFINED SPIRV-Headers_SOURCE_DIR)
+-    set(SPIRV_HEADERS_SKIP_INSTALL ON)
+-    set(SPIRV_HEADERS_SKIP_EXAMPLES ON)
+-    add_subdirectory(${SPIRV_HEADER_DIR})
+-  endif()
 -else()
 -  message(FATAL_ERROR
 -    "SPIRV-Headers was not found - please checkout a copy under external/.")
@@ -36,6 +47,3 @@ index d1251c24..694b726c 100644
  if (NOT ${SPIRV_SKIP_TESTS})
    # Find gmock if we can. If it's not already configured, then try finding
    # it in external/googletest.
--- 
-2.20.1
-
