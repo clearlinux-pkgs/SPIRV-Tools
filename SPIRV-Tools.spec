@@ -4,7 +4,7 @@
 #
 Name     : SPIRV-Tools
 Version  : 2021.3
-Release  : 8
+Release  : 9
 URL      : https://github.com/KhronosGroup/SPIRV-Tools/archive/refs/tags/v2021.3.tar.gz
 Source0  : https://github.com/KhronosGroup/SPIRV-Tools/archive/refs/tags/v2021.3.tar.gz
 Summary  : Tools for SPIR-V
@@ -75,7 +75,7 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1643918706
+export SOURCE_DATE_EPOCH=1669915036
 mkdir -p clr-build
 pushd clr-build
 export GCC_IGNORE_WERROR=1
@@ -106,11 +106,11 @@ unset PKG_CONFIG_PATH
 popd
 
 %install
-export SOURCE_DATE_EPOCH=1643918706
+export SOURCE_DATE_EPOCH=1669915036
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/SPIRV-Tools
-cp %{_builddir}/SPIRV-Tools-2021.3/LICENSE %{buildroot}/usr/share/package-licenses/SPIRV-Tools/2b8b815229aa8a61e483fb4ba0588b8b6c491890
-cp %{_builddir}/SPIRV-Tools-2021.3/utils/vscode/src/lsp/LICENSE %{buildroot}/usr/share/package-licenses/SPIRV-Tools/2b8b815229aa8a61e483fb4ba0588b8b6c491890
+cp %{_builddir}/SPIRV-Tools-%{version}/LICENSE %{buildroot}/usr/share/package-licenses/SPIRV-Tools/2b8b815229aa8a61e483fb4ba0588b8b6c491890
+cp %{_builddir}/SPIRV-Tools-%{version}/utils/vscode/src/lsp/LICENSE %{buildroot}/usr/share/package-licenses/SPIRV-Tools/2b8b815229aa8a61e483fb4ba0588b8b6c491890
 pushd clr-build32
 %make_install32
 if [ -d  %{buildroot}/usr/lib32/pkgconfig ]
@@ -129,6 +129,11 @@ popd
 pushd clr-build
 %make_install
 popd
+## install_append content
+ln -s SPIRV-Tools.pc %{buildroot}/usr/lib64/pkgconfig/spirv-tools.pc
+ln -s SPIRV-Tools-shared.pc %{buildroot}/usr/lib64/pkgconfig/spirv-tools-shared.pc
+
+## install_append end
 
 %files
 %defattr(-,root,root,-)
@@ -175,6 +180,8 @@ popd
 /usr/lib64/libSPIRV-Tools.so
 /usr/lib64/pkgconfig/SPIRV-Tools-shared.pc
 /usr/lib64/pkgconfig/SPIRV-Tools.pc
+/usr/lib64/pkgconfig/spirv-tools-shared.pc
+/usr/lib64/pkgconfig/spirv-tools.pc
 
 %files dev32
 %defattr(-,root,root,-)

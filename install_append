@@ -1,0 +1,3 @@
+ln -s SPIRV-Tools.pc %{buildroot}/usr/lib64/pkgconfig/spirv-tools.pc
+ln -s SPIRV-Tools-shared.pc %{buildroot}/usr/lib64/pkgconfig/spirv-tools-shared.pc
+
