@@ -5,7 +5,7 @@
 #
 Name     : SPIRV-Tools
 Version  : 2023.2
-Release  : 11
+Release  : 12
 URL      : https://github.com/KhronosGroup/SPIRV-Tools/archive/v2023.2/SPIRV-Tools-2023.2.tar.gz
 Source0  : https://github.com/KhronosGroup/SPIRV-Tools/archive/v2023.2/SPIRV-Tools-2023.2.tar.gz
 Source1  : https://github.com/KhronosGroup/SPIRV-Headers/archive/refs/tags/sdk-1.3.243.0.tar.gz
@@ -13,6 +13,7 @@ Summary  : Tools for SPIR-V
 Group    : Development/Tools
 License  : Apache-2.0 MIT
 Requires: SPIRV-Tools-bin = %{version}-%{release}
+Requires: SPIRV-Tools-lib = %{version}-%{release}
 Requires: SPIRV-Tools-license = %{version}-%{release}
 BuildRequires : buildreq-cmake
 BuildRequires : gcc-dev32
@@ -42,6 +43,7 @@ bin components for the SPIRV-Tools package.
 %package dev
 Summary: dev components for the SPIRV-Tools package.
 Group: Development
+Requires: SPIRV-Tools-lib = %{version}-%{release}
 Requires: SPIRV-Tools-bin = %{version}-%{release}
 Provides: SPIRV-Tools-devel = %{version}-%{release}
 Requires: SPIRV-Tools = %{version}-%{release}
@@ -53,11 +55,30 @@ dev components for the SPIRV-Tools package.
 %package dev32
 Summary: dev32 components for the SPIRV-Tools package.
 Group: Default
+Requires: SPIRV-Tools-lib32 = %{version}-%{release}
 Requires: SPIRV-Tools-bin = %{version}-%{release}
 Requires: SPIRV-Tools-dev = %{version}-%{release}
 
 %description dev32
 dev32 components for the SPIRV-Tools package.
+
+
+%package lib
+Summary: lib components for the SPIRV-Tools package.
+Group: Libraries
+Requires: SPIRV-Tools-license = %{version}-%{release}
+
+%description lib
+lib components for the SPIRV-Tools package.
+
+
+%package lib32
+Summary: lib32 components for the SPIRV-Tools package.
+Group: Default
+Requires: SPIRV-Tools-license = %{version}-%{release}
+
+%description lib32
+lib32 components for the SPIRV-Tools package.
 
 
 %package license
@@ -81,14 +102,14 @@ export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1680219770
+export SOURCE_DATE_EPOCH=1687995480
 mkdir -p clr-build
 pushd clr-build
 export GCC_IGNORE_WERROR=1
-export CFLAGS="$CFLAGS -fdebug-types-section -femit-struct-debug-baseonly -fno-lto -g1 -gno-column-info -gno-variable-location-views -gz "
-export FCFLAGS="$FFLAGS -fdebug-types-section -femit-struct-debug-baseonly -fno-lto -g1 -gno-column-info -gno-variable-location-views -gz "
-export FFLAGS="$FFLAGS -fdebug-types-section -femit-struct-debug-baseonly -fno-lto -g1 -gno-column-info -gno-variable-location-views -gz "
-export CXXFLAGS="$CXXFLAGS -fdebug-types-section -femit-struct-debug-baseonly -fno-lto -g1 -gno-column-info -gno-variable-location-views -gz "
+export CFLAGS="$CFLAGS -fdebug-types-section -femit-struct-debug-baseonly -fno-lto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+export FCFLAGS="$FFLAGS -fdebug-types-section -femit-struct-debug-baseonly -fno-lto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+export FFLAGS="$FFLAGS -fdebug-types-section -femit-struct-debug-baseonly -fno-lto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+export CXXFLAGS="$CXXFLAGS -fdebug-types-section -femit-struct-debug-baseonly -fno-lto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
 %cmake .. -DSPIRV_HEADER_INCLUDE_DIR=/usr/include \
 -DSPIRV_TOOLS_BUILD_STATIC=OFF
 make  %{?_smp_mflags}
@@ -96,10 +117,10 @@ popd
 mkdir -p clr-build32
 pushd clr-build32
 export GCC_IGNORE_WERROR=1
-export CFLAGS="$CFLAGS -fdebug-types-section -femit-struct-debug-baseonly -fno-lto -g1 -gno-column-info -gno-variable-location-views -gz "
-export FCFLAGS="$FFLAGS -fdebug-types-section -femit-struct-debug-baseonly -fno-lto -g1 -gno-column-info -gno-variable-location-views -gz "
-export FFLAGS="$FFLAGS -fdebug-types-section -femit-struct-debug-baseonly -fno-lto -g1 -gno-column-info -gno-variable-location-views -gz "
-export CXXFLAGS="$CXXFLAGS -fdebug-types-section -femit-struct-debug-baseonly -fno-lto -g1 -gno-column-info -gno-variable-location-views -gz "
+export CFLAGS="$CFLAGS -fdebug-types-section -femit-struct-debug-baseonly -fno-lto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+export FCFLAGS="$FFLAGS -fdebug-types-section -femit-struct-debug-baseonly -fno-lto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+export FFLAGS="$FFLAGS -fdebug-types-section -femit-struct-debug-baseonly -fno-lto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
+export CXXFLAGS="$CXXFLAGS -fdebug-types-section -femit-struct-debug-baseonly -fno-lto -g1 -gno-column-info -gno-variable-location-views -gz=zstd "
 export PKG_CONFIG_PATH="/usr/lib32/pkgconfig:/usr/share/pkgconfig"
 export ASFLAGS="${ASFLAGS}${ASFLAGS:+ }--32"
 export CFLAGS="${CFLAGS}${CFLAGS:+ }-m32 -mstackrealign"
@@ -112,7 +133,7 @@ unset PKG_CONFIG_PATH
 popd
 
 %install
-export SOURCE_DATE_EPOCH=1680219770
+export SOURCE_DATE_EPOCH=1687995480
 rm -rf %{buildroot}
 mkdir -p %{buildroot}/usr/share/package-licenses/SPIRV-Tools
 cp %{_builddir}/SPIRV-Headers-sdk-1.3.243.0/LICENSE %{buildroot}/usr/share/package-licenses/SPIRV-Tools/9a84200f47e09abfbde1a6b25028460451b23d03 || :
@@ -185,13 +206,6 @@ ln -s SPIRV-Tools-shared.pc %{buildroot}/usr/lib64/pkgconfig/spirv-tools-shared.
 /usr/lib64/cmake/SPIRV-Tools/SPIRV-ToolsConfig.cmake
 /usr/lib64/cmake/SPIRV-Tools/SPIRV-ToolsTarget-relwithdebinfo.cmake
 /usr/lib64/cmake/SPIRV-Tools/SPIRV-ToolsTarget.cmake
-/usr/lib64/libSPIRV-Tools-diff.so
-/usr/lib64/libSPIRV-Tools-link.so
-/usr/lib64/libSPIRV-Tools-lint.so
-/usr/lib64/libSPIRV-Tools-opt.so
-/usr/lib64/libSPIRV-Tools-reduce.so
-/usr/lib64/libSPIRV-Tools-shared.so
-/usr/lib64/libSPIRV-Tools.so
 /usr/lib64/pkgconfig/SPIRV-Tools-shared.pc
 /usr/lib64/pkgconfig/SPIRV-Tools.pc
 /usr/lib64/pkgconfig/spirv-tools-shared.pc
@@ -220,6 +234,23 @@ ln -s SPIRV-Tools-shared.pc %{buildroot}/usr/lib64/pkgconfig/spirv-tools-shared.
 /usr/lib32/cmake/SPIRV-Tools/SPIRV-ToolsConfig.cmake
 /usr/lib32/cmake/SPIRV-Tools/SPIRV-ToolsTarget-relwithdebinfo.cmake
 /usr/lib32/cmake/SPIRV-Tools/SPIRV-ToolsTarget.cmake
+/usr/lib32/pkgconfig/32SPIRV-Tools-shared.pc
+/usr/lib32/pkgconfig/32SPIRV-Tools.pc
+/usr/lib32/pkgconfig/SPIRV-Tools-shared.pc
+/usr/lib32/pkgconfig/SPIRV-Tools.pc
+
+%files lib
+%defattr(-,root,root,-)
+/usr/lib64/libSPIRV-Tools-diff.so
+/usr/lib64/libSPIRV-Tools-link.so
+/usr/lib64/libSPIRV-Tools-lint.so
+/usr/lib64/libSPIRV-Tools-opt.so
+/usr/lib64/libSPIRV-Tools-reduce.so
+/usr/lib64/libSPIRV-Tools-shared.so
+/usr/lib64/libSPIRV-Tools.so
+
+%files lib32
+%defattr(-,root,root,-)
 /usr/lib32/libSPIRV-Tools-diff.so
 /usr/lib32/libSPIRV-Tools-link.so
 /usr/lib32/libSPIRV-Tools-lint.so
@@ -227,10 +258,6 @@ ln -s SPIRV-Tools-shared.pc %{buildroot}/usr/lib64/pkgconfig/spirv-tools-shared.
 /usr/lib32/libSPIRV-Tools-reduce.so
 /usr/lib32/libSPIRV-Tools-shared.so
 /usr/lib32/libSPIRV-Tools.so
-/usr/lib32/pkgconfig/32SPIRV-Tools-shared.pc
-/usr/lib32/pkgconfig/32SPIRV-Tools.pc
-/usr/lib32/pkgconfig/SPIRV-Tools-shared.pc
-/usr/lib32/pkgconfig/SPIRV-Tools.pc
 
 %files license
 %defattr(0644,root,root,0755)
