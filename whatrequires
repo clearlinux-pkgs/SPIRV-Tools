@@ -1,4 +1,7 @@
 # This file contains recursive sources that require this package
 llvm
 llvm16
+llvm17
+llvm18
+shaderc
 vkd3d
